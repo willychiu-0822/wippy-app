@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WiPPY — AI 驅動的活動管理與訊息推播平台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --bg-2:      #111118;
+      --bg-3:      #16161f;
+      --border:    rgba(255,255,255,0.07);
+      --border-hi: rgba(255,255,255,0.13);
+      --text:      #e8e8f0;
+      --text-dim:  #7a7a9a;
+      --text-mute: #44445a;
+      --accent:    #7c6dfa;
+      --accent-2:  #3ecfcf;
+      --accent-glow: rgba(124,109,250,0.18);
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'Noto Sans TC', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 56px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.83rem;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      border: 1px solid rgba(124,109,250,0.4);
+      border-radius: 4px;
+      padding: 2px 8px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 6rem 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* ── HERO ── */
+    #hero {
+      padding-top: 140px;
+      padding-bottom: 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute;
+      top: -120px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at center, rgba(124,109,250,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 1px;
+      background: var(--accent);
+    }
+    h1 {
+      font-family: var(--mono);
+      font-size: clamp(2.8rem, 6vw, 4.2rem);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 1.2rem;
+    }
+    h1 .dim { color: var(--text-dim); font-weight: 400; }
+    .hero-tagline {
+      font-size: 1.15rem;
+      color: var(--text);
+      font-weight: 300;
+      margin-bottom: 0.75rem;
+      max-width: 560px;
+    }
+    .hero-sub {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      line-height: 1.65;
+    }
+    .hero-actions {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      padding: 0.65rem 1.4rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      padding: 0.65rem 1.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-hi);
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+    /* ── 截圖區塊 ── */
+    .screenshot-placeholder {
+      margin-top: 4rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      overflow: hidden;
+    }
+    .screenshot-toolbar {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-3);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .screenshot-body {
+      min-height: 320px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.75rem;
+      padding: 2rem;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 8px,
+        rgba(255,255,255,0.015) 8px,
+        rgba(255,255,255,0.015) 9px
+      );
+    }
+    .screenshot-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-mute);
+      letter-spacing: 0.08em;
+    }
+    .screenshot-hint {
+      font-size: 0.78rem;
+      color: var(--text-mute);
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    h2 {
+      font-size: 1.65rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    .section-desc {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── PROBLEM / SOLUTION ── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 640px) { .problem-grid { grid-template-columns: 1fr; } }
+    .problem-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .problem-card h3 {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .problem-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .problem-card ul li {
+      font-size: 0.88rem;
+      color: var(--text);
+      padding-left: 1.2rem;
+      position: relative;
+      line-height: 1.6;
+    }
+    .problem-card ul li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--text-mute);
+      font-family: var(--mono);
+    }
+    .solution-card ul li::before { color: var(--accent); content: '✓'; }
+
+    /* ── PIPELINE ── */
+    .pipeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .pipeline-item {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.25rem;
+      position: relative;
+    }
+    .pipeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 23px; top: 44px; bottom: -4px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent), var(--border));
+      opacity: 0.4;
+    }
+    .pipeline-num {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hi);
+      background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pipeline-item:hover .pipeline-num {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .pipeline-content {
+      padding: 12px 0 2rem 0;
+    }
+    .pipeline-stage {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-2);
+      margin-bottom: 0.3rem;
+    }
+    .pipeline-file {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-mute);
+      margin-bottom: 0.4rem;
+    }
+    .pipeline-desc {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .pipeline-item {
+      cursor: pointer;
+    }
+    .pipeline-item.open .pipeline-num {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .pipeline-toggle {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .pipeline-toggle-hint {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-mute);
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+    .pipeline-item:hover .pipeline-toggle-hint { color: var(--text-dim); }
+    .pipeline-item.open .pipeline-toggle-hint { color: var(--accent); }
+    .pipeline-chevron {
+      width: 12px; height: 12px;
+      border-right: 1.5px solid var(--text-mute);
+      border-bottom: 1.5px solid var(--text-mute);
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform 0.2s, border-color 0.2s;
+      flex-shrink: 0;
+    }
+    .pipeline-item.open .pipeline-chevron {
+      transform: rotate(-135deg) translateY(-2px);
+      border-color: var(--accent);
+    }
+    .pipeline-expand {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 0;
+    }
+    .pipeline-item.open .pipeline-expand {
+      max-height: 300px;
+      opacity: 1;
+    }
+    .pipeline-expand-inner {
+      margin-top: 0.9rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding-bottom: 0.5rem;
+    }
+    @media (max-width: 560px) { .pipeline-expand-inner { grid-template-columns: 1fr; } }
+    .pex-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+    }
+    .pex-label {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      margin-bottom: 0.45rem;
+    }
+    .pex-file {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent-2);
+    }
+    .pex-issues {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 0.35rem;
+    }
+    .pex-issues li {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.55;
+    }
+    .pex-issues li::before {
+      content: '!';
+      position: absolute; left: 0;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: #f0a04b;
+    }
+
+    /* ── INTENT CARDS ── */
+    .intent-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 700px) { .intent-grid { grid-template-columns: 1fr; } }
+    .intent-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.6rem 1.4rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .intent-card:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-2px);
+    }
+    .intent-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .tag-plan { background: rgba(124,109,250,0.15); color: var(--accent); }
+    .tag-extract { background: rgba(62,207,207,0.13); color: var(--accent-2); }
+    .tag-chat { background: rgba(255,255,255,0.07); color: var(--text-dim); }
+    .intent-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+    .intent-card p {
+      font-size: 0.84rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .intent-effect {
+      margin-top: 1rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-mute);
+    }
+    .intent-effect span { color: var(--text-dim); }
+
+    /* ── USER GUIDE ── */
+    .guide-audience {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      margin-bottom: 2.5rem;
+      font-size: 0.83rem;
+      color: var(--text-dim);
+    }
+    .guide-audience strong { color: var(--text); }
+    .guide-audience-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent-2); flex-shrink: 0;
+    }
+
+    /* checklist */
+    .prereq-list {
+      display: flex; flex-direction: column; gap: 0.55rem;
+      margin-bottom: 2.5rem;
+    }
+    .prereq-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.86rem; color: var(--text-dim); line-height: 1.6;
+    }
+    .prereq-check {
+      width: 18px; height: 18px; border-radius: 4px;
+      background: rgba(62,207,207,0.15);
+      border: 1px solid rgba(62,207,207,0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+      font-size: 0.65rem; color: var(--accent-2);
+    }
+
+    /* flow steps */
+    .flow-steps {
+      display: flex; align-items: flex-start; gap: 0;
+      margin-bottom: 3rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center;
+      flex: 1; min-width: 120px;
+      text-align: center;
+    }
+    .flow-step-head {
+      display: flex; align-items: center; width: 100%;
+    }
+    .flow-step-num {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--border-hi);
+      background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 0.7rem;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .flow-step-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border-hi), var(--border));
+    }
+    .flow-step:last-child .flow-step-line { display: none; }
+    .flow-step-body {
+      padding: 0.7rem 0.5rem 0;
+    }
+    .flow-step-title {
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text); margin-bottom: 0.25rem;
+      line-height: 1.4;
+    }
+    .flow-step-sub {
+      font-size: 0.73rem; color: var(--text-mute); line-height: 1.5;
+    }
+
+    /* chat demo */
+    .chat-demo {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+    .chat-demo-bar {
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--border);
+      padding: 0.7rem 1.25rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .chat-demo-bar-label {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--text-mute); letter-spacing: 0.06em;
+    }
+    .chat-demo-body {
+      padding: 1.5rem 1.25rem;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .chat-bubble {
+      max-width: 82%; display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .chat-bubble.user { align-self: flex-end; align-items: flex-end; }
+    .chat-bubble.ai { align-self: flex-start; align-items: flex-start; }
+    .chat-role {
+      font-family: var(--mono); font-size: 0.63rem;
+      color: var(--text-mute); letter-spacing: 0.06em;
+    }
+    .chat-text {
+      font-size: 0.83rem; line-height: 1.65;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+    }
+    .chat-bubble.user .chat-text {
+      background: rgba(124,109,250,0.18);
+      color: var(--text);
+      border-bottom-right-radius: 2px;
+    }
+    .chat-bubble.ai .chat-text {
+      background: var(--bg-3);
+      color: var(--text-dim);
+      border-bottom-left-radius: 2px;
+      border: 1px solid var(--border);
+    }
+    .chat-keyword {
+      font-family: var(--mono); font-size: 0.75rem;
+      background: rgba(62,207,207,0.13);
+      color: var(--accent-2);
+      border-radius: 3px; padding: 1px 5px;
+    }
+
+    /* FAQ */
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 1rem 0;
+    }
+    .faq-q-text {
+      font-size: 0.88rem; font-weight: 500; color: var(--text);
+    }
+    .faq-chevron {
+      width: 10px; height: 10px; flex-shrink: 0;
+      border-right: 1.5px solid var(--text-mute);
+      border-bottom: 1.5px solid var(--text-mute);
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .faq-item.open .faq-chevron {
+      transform: rotate(-135deg) translateY(-2px);
+      border-color: var(--accent);
+    }
+    .faq-a {
+      overflow: hidden; max-height: 0;
+      opacity: 0; transition: max-height 0.3s ease, opacity 0.25s;
+    }
+    .faq-item.open .faq-a { max-height: 200px; opacity: 1; }
+    .faq-a-inner {
+      font-size: 0.84rem; color: var(--text-dim);
+      line-height: 1.75; padding-bottom: 1rem;
+    }
+    .release-wrap {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0 2.5rem;
+    }
+    @media (max-width: 768px) {
+      .release-wrap { grid-template-columns: 1fr; gap: 1rem; }
+      .release-sidebar { display: flex; align-items: center; gap: 0.75rem; }
+    }
+    .release-sidebar {
+      padding-top: 0.15rem;
+    }
+    .release-version {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-2);
+      border: 1px solid var(--border-hi);
+      border-radius: 6px;
+      padding: 4px 10px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .release-date {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-mute);
+      margin-top: 0.5rem;
+      white-space: nowrap;
+    }
+    .release-line {
+      width: 1px;
+      background: var(--border);
+      margin: 0.75rem auto 0;
+    }
+    .release-body {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .release-header {
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 1.4rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .release-header-title {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .release-header-sub {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-mute);
+    }
+    .release-issue {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .release-issue:last-child { border-bottom: none; }
+    .release-issue:hover { background: rgba(255,255,255,0.02); }
+    .issue-title {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+    .issue-desc {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .issue-desc code {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--accent-2);
+    }
+    .issue-phase {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .phase-2-tag {
+      background: rgba(124,109,250,0.15);
+      color: var(--accent);
+      border: 1px solid rgba(124,109,250,0.3);
+    }
+    .phase-3-tag {
+      background: rgba(62,207,207,0.1);
+      color: var(--accent-2);
+      border: 1px solid rgba(62,207,207,0.25);
+    }
+
+    /* ── ROADMAP ── */
+    .roadmap-phases {
+      display: flex; flex-direction: column; gap: 2rem;
+    }
+    .phase-block {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .phase-header {
+      background: var(--bg-2);
+      padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(124,109,250,0.15);
+      color: var(--accent);
+    }
+    .phase-badge.phase-3 {
+      background: rgba(62,207,207,0.1);
+      color: var(--accent-2);
+    }
+    .phase-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .phase-items {
+      padding: 1.25rem 1.5rem;
+      display: flex; flex-direction: column; gap: 0.9rem;
+    }
+    .phase-item {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+      padding-left: 1.3rem;
+      position: relative;
+      line-height: 1.65;
+    }
+    .phase-item::before {
+      content: '→';
+      position: absolute; left: 0;
+      font-family: var(--mono);
+      color: var(--text-mute);
+      font-size: 0.8rem;
+    }
+    .phase-item code {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--accent-2);
+      background: rgba(62,207,207,0.08);
+      border-radius: 3px;
+      padding: 1px 5px;
+    }
+
+    /* ── TECH STACK ── */
+    .stack-section {
+      display: flex; flex-direction: column; gap: 2rem;
+    }
+    .stack-group h3 {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--text-mute);
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 0.55rem;
+    }
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .badge:hover { border-color: var(--border-hi); color: var(--text); }
+    .badge.hi { border-color: rgba(124,109,250,0.35); color: var(--accent); background: rgba(124,109,250,0.08); }
+    .badge.hi2 { border-color: rgba(62,207,207,0.3); color: var(--accent-2); background: rgba(62,207,207,0.07); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      text-align: center;
+    }
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-mute);
+    }
+    footer a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--text); }
+
+    /* ── OBSERVABILITY BLOCK ── */
+    .obs-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem 1.75rem;
+      margin-top: 2.5rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 2;
+    }
+    .obs-row { display: flex; gap: 1.5rem; align-items: baseline; }
+    .obs-key { color: var(--text-mute); min-width: 140px; }
+    .obs-val { color: var(--text-dim); }
+    .obs-val .hi { color: var(--accent-2); }
+    .obs-val .accent { color: var(--accent); }
+
+    /* ── PRODUCT SHOWCASE ── */
+    .showcase {
+      margin-top: 3.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+    }
+    .showcase-bar {
+      display: flex; align-items: center;
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.25rem;
+      height: 44px;
+      gap: 0;
+    }
+    .showcase-dots { display: flex; gap: 6px; margin-right: 1.25rem; }
+    .showcase-tabs { display: flex; flex: 1; overflow-x: auto; }
+    .stab {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-mute);
+      padding: 0 1rem;
+      height: 44px;
+      display: flex; align-items: center;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .stab:hover { color: var(--text-dim); }
+    .stab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .showcase-body {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+    }
+    @media (max-width: 680px) {
+      .showcase-body { grid-template-columns: 1fr; }
+      .showcase-caption { border-left: none; border-top: 1px solid var(--border); }
+    }
+    .showcase-img-wrap {
+      background: #f0f0f5;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 560px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .showcase-img-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.2s;
+    }
+    .showcase-caption {
+      border-left: 1px solid var(--border);
+      padding: 2rem 1.6rem;
+      display: flex; flex-direction: column; justify-content: flex-start; gap: 0;
+      position: sticky; top: 56px; align-self: start;
+    }
+    .cap-tag {
+      font-family: var(--mono); font-size: 0.67rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.7rem;
+    }
+    .cap-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.55rem; line-height: 1.4; }
+    .cap-desc { font-size: 0.83rem; color: var(--text-dim); line-height: 1.75; margin-bottom: 1.25rem; }
+    .cap-points { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .cap-points li {
+      font-size: 0.78rem; color: var(--text-dim);
+      padding-left: 1rem; position: relative; line-height: 1.55;
+    }
+    .cap-points li::before { content: '·'; position: absolute; left: 0; color: var(--accent); font-weight: 700; font-size: 1rem; }
+    .cap-dots { display: flex; gap: 6px; margin-top: 1.5rem; }
+    .cap-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border-hi); cursor: pointer; transition: background 0.2s;
+    }
+    .cap-dot.active { background: var(--accent); }
+
+    /* ── RWD ── */
+    @media (max-width: 768px) {
+      /* Nav */
+      nav { padding: 0 1.25rem; }
+      .nav-links { display: none; }
+
+      /* Layout */
+      .container { padding: 0 1.25rem; }
+      section { padding: 4rem 0; }
+      #hero { padding-top: 100px; padding-bottom: 4rem; }
+
+      /* Hero */
+      .hero-tagline { font-size: 1rem; }
+      .hero-sub { font-size: 0.83rem; }
+      .hero-actions { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+
+      /* Showcase */
+      .showcase-body { grid-template-columns: 1fr; }
+      .showcase-caption {
+        border-left: none;
+        border-top: 1px solid var(--border);
+        position: static;
+      }
+      .showcase-img-wrap { max-height: 340px; }
+
+      /* Problem grid */
+      .problem-grid { grid-template-columns: 1fr; }
+
+      /* Pipeline */
+      .pipeline-expand-inner { grid-template-columns: 1fr; }
+
+      /* Intent grid */
+      .intent-grid { grid-template-columns: 1fr; }
+
+      /* Limits */
+      .limit-item { grid-template-columns: 1fr; gap: 0.4rem; }
+      .limit-key { color: var(--accent); font-size: 0.75rem; }
+
+      /* Obs block */
+      .obs-block { padding: 1.25rem; }
+      .obs-row { flex-direction: column; gap: 0.1rem; }
+      .obs-key { min-width: auto; }
+
+      /* Roadmap */
+      .phase-header { flex-wrap: wrap; gap: 0.5rem; }
+
+      /* Stack */
+      h2 { font-size: 1.35rem; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 2.4rem; }
+      .showcase-tabs { gap: 0; }
+      .stab { padding: 0 0.65rem; font-size: 0.68rem; }
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">Wi<span>PPY</span></div>
+  <ul class="nav-links">
+    <li><a href="#guide">使用指南</a></li>
+    <li><a href="#problem">問題</a></li>
+    <li><a href="#pipeline">架構</a></li>
+    <li><a href="#intents">輸出</a></li>
+    <li><a href="#limits">限制</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#stack">技術棧</a></li>
+  </ul>
+  <span class="nav-badge">v1.0</span>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-eyebrow">Side Project · AI Product Builder 作品展示</div>
+    <h1>Wi<span class="dim">PPY</span></h1>
+    <p class="hero-tagline">用自然語言規劃活動訊息，AI 幫你寫好、排好、推出去。</p>
+    <p class="hero-sub">
+      AI 驅動的活動管理與訊息推播平台。透過 7 階段 Harness Pipeline，
+      讓每一次 LLM 呼叫都可觀測、可恢復，並透過 LINE Bot 自動推播給對的群組。
+    </p>
+
+    <div class="hero-actions">
+      <!-- GitHub 連結區塊：請替換 href -->
+      <a href="https://github.com/willychiu-0822/WiPPY" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.164 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        GitHub 原始碼
+      </a>
+      <!-- 截圖連結：可改為實際 demo url -->
+      <a href="#screenshots" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        產品截圖
+      </a>
+    </div>
+
+    <!-- 產品截圖互動展示 -->
+    <div class="showcase" id="screenshots">
+      <div class="showcase-bar">
+        <div class="showcase-dots">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+        </div>
+        <div class="showcase-tabs">
+          <div class="stab active" data-tab="0">知識庫</div>
+          <div class="stab" data-tab="1">Agent 對話</div>
+          <div class="stab" data-tab="2">推播企畫</div>
+          <div class="stab" data-tab="3">發送紀錄</div>
+        </div>
+      </div>
+      <div class="showcase-body">
+        <div class="showcase-img-wrap">
+          <img id="showcase-img" src="screenshots/knowledge.png" alt="知識庫" />
+        </div>
+        <div class="showcase-caption">
+          <div class="cap-tag" id="cap-tag">知識庫 · load_context</div>
+          <div class="cap-title" id="cap-title">活動知識庫管理</div>
+          <div class="cap-desc" id="cap-desc">儲存活動背景資料、選書哲學、氛圍調性。每次對話都會自動載入作為 LLM 的 system prompt context。</div>
+          <ul class="cap-points" id="cap-points">
+            <li>手動或 AI 萃取新增知識條目</li>
+            <li>知識內容注入 Stage 1 load_context</li>
+            <li>目標群組同頁管理，已選 2 個</li>
+          </ul>
+          <div class="cap-dots">
+            <div class="cap-dot active" data-tab="0"></div>
+            <div class="cap-dot" data-tab="1"></div>
+            <div class="cap-dot" data-tab="2"></div>
+            <div class="cap-dot" data-tab="3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const tabs = [
+        {
+          img: 'screenshots/knowledge.png',
+          alt: '知識庫',
+          tag: '知識庫 · load_context',
+          title: '活動知識庫管理',
+          desc: '儲存活動背景資料、選書哲學、氛圍調性。每次對話都會自動載入作為 LLM 的 system prompt context。',
+          points: ['手動或 AI 萃取新增知識條目', '知識內容注入 Stage 1 load_context', '目標群組同頁管理，已選 2 個']
+        },
+        {
+          img: 'screenshots/agent-chat.png',
+          alt: 'Agent 對話',
+          tag: 'Agent 對話 · run_planner',
+          title: '自然語言下指令',
+          desc: '用一句話告訴 Agent 要做什麼。內建三個快速提示範例，直接點擊即可開始。',
+          points: ['對話記憶保留最近 10 輪', 'Stage 3 呼叫 LLM，最多 3 次（含 repair）', 'intent 在 parse_output 事後推斷']
+        },
+        {
+          img: 'screenshots/plan.png',
+          alt: '推播企畫',
+          tag: '推播企畫 · persist_effects',
+          title: 'AI 產生的訊息排程',
+          desc: 'Agent 自動規劃日期、時間、文案，通過 validate_output 驗證後寫入 Firestore，準備推播。',
+          points: ['每則訊息帶狀態標籤：已核準 / 已送出', 'AI badge 標示由 LLM 產生', 'sequenceOrder 驗證防止重複排程']
+        },
+        {
+          img: 'screenshots/send-records.png',
+          alt: '發送紀錄',
+          tag: '發送紀錄 · finalize_response',
+          title: 'LINE Bot 推播紀錄',
+          desc: '每次推播記錄目標群組 ID 與發送時間，成功標記清晰。全部帶 runId 確保可追溯。',
+          points: ['推播至多個目標群組各留一筆', '成功 / 失敗狀態即時更新', '時間戳 + 群組 ID 完整可追溯']
+        }
+      ];
+
+      let current = 0;
+
+      function switchTab(idx) {
+        current = idx;
+        const t = tabs[idx];
+        const img = document.getElementById('showcase-img');
+        img.style.opacity = '0';
+        setTimeout(() => {
+          img.src = t.img;
+          img.alt = t.alt;
+          img.style.opacity = '1';
+        }, 150);
+        document.getElementById('cap-tag').textContent = t.tag;
+        document.getElementById('cap-title').textContent = t.title;
+        document.getElementById('cap-desc').textContent = t.desc;
+        const ul = document.getElementById('cap-points');
+        ul.innerHTML = t.points.map(p => `<li>${p}</li>`).join('');
+
+        document.querySelectorAll('.stab').forEach((el, i) => el.classList.toggle('active', i === idx));
+        document.querySelectorAll('.cap-dot').forEach((el, i) => el.classList.toggle('active', i === idx));
+      }
+
+      document.querySelectorAll('.stab, .cap-dot').forEach(el => {
+        el.addEventListener('click', () => switchTab(+el.dataset.tab));
+      });
+    </script>
+  </div>
+</section>
+
+<!-- ── USER GUIDE ── -->
+<section id="guide">
+  <div class="container">
+    <div class="section-label">01 · 使用指南</div>
+    <h2>給活動規劃者</h2>
+    <p class="section-desc">不需要技術背景，只要會打字，就能讓 AI 幫你規劃好所有推播時間與內容。</p>
+
+    <div class="guide-audience">
+      <span class="guide-audience-dot"></span>
+      <span>適合對象：<strong>活動規劃者、社群管理者</strong>，無需程式知識</span>
+    </div>
+
+    <!-- 前置條件 -->
+    <div style="font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:0.75rem;">前置條件</div>
+    <div class="prereq-list" style="margin-bottom:2.5rem;">
+      <div class="prereq-item"><div class="prereq-check">✓</div><span>已登入 WiPPY 平台帳號</span></div>
+      <div class="prereq-item"><div class="prereq-check">✓</div><span>WiPPY LINE Bot 已被邀請進入目標群組</span></div>
+      <div class="prereq-item"><div class="prereq-check">✓</div><span>左側「群組」頁面可看到你的 LINE 群組</span></div>
+    </div>
+
+    <!-- 5 步驟流程 -->
+    <div style="font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:1rem;">操作流程</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-head">
+          <div class="flow-step-num">01</div>
+          <div class="flow-step-line"></div>
+        </div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">建立活動</div>
+          <div class="flow-step-sub">填入名稱、日期、目標群組</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-head">
+          <div class="flow-step-num">02</div>
+          <div class="flow-step-line"></div>
+        </div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">設定知識庫</div>
+          <div class="flow-step-sub">活動背景、語氣設定、注意事項</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-head">
+          <div class="flow-step-num">03</div>
+          <div class="flow-step-line"></div>
+        </div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">Agent 對話</div>
+          <div class="flow-step-sub">用自然語言描述需求，AI 生成草稿</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-head">
+          <div class="flow-step-num">04</div>
+          <div class="flow-step-line"></div>
+        </div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">審核批准</div>
+          <div class="flow-step-sub">到「推播企畫」確認並批准</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-head">
+          <div class="flow-step-num">05</div>
+          <div class="flow-step-line"></div>
+        </div>
+        <div class="flow-step-body">
+          <div class="flow-step-title">自動發送</div>
+          <div class="flow-step-sub">時間到，系統自動推播到 LINE 群組</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 對話示範 -->
+    <div style="font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:1rem;">對話示範</div>
+    <div class="chat-demo">
+      <div class="chat-demo-bar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="chat-demo-bar-label" style="margin-left:0.5rem;">Agent 對話 · 五月露營活動</span>
+      </div>
+      <div class="chat-demo-body">
+        <div class="chat-bubble user">
+          <div class="chat-role">你</div>
+          <div class="chat-text">這週幫我安排三則提醒訊息：禮拜三晚上 8 點提醒帶帳篷、禮拜五早上 10 點提醒報名截止、禮拜六早上 7 點出發提醒</div>
+        </div>
+        <div class="chat-bubble ai">
+          <div class="chat-role">AI Agent</div>
+          <div class="chat-text">好的，以下是草稿：<br><br>
+            ① 5/7（三）20:00 — 「露營夥伴們，記得準備帳篷、睡袋喔！還有三天就出發囉 ⛺」<br>
+            ② 5/9（五）10:00 — 「提醒大家，今天是報名截止日！還沒報名的趕快行動！」<br>
+            ③ 5/10（六）07:00 — 「今天出發！集合地點準時 8:30 見 🎉」<br><br>
+            確認沒問題的話，請說 <span class="chat-keyword">放進排程</span>
+          </div>
+        </div>
+        <div class="chat-bubble user">
+          <div class="chat-role">你</div>
+          <div class="chat-text">很好，<span class="chat-keyword">放進排程</span></div>
+        </div>
+        <div class="chat-bubble ai">
+          <div class="chat-role">AI Agent</div>
+          <div class="chat-text">✅ 已將 3 則推播訊息加入排程！請到「推播企畫」分頁確認後點「批准」，訊息就會在指定時間自動發出。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div style="font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:0.75rem;">常見問題</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-q-text">訊息到了時間卻沒發出去，怎麼辦？</span>
+          <span class="faq-chevron"></span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">最常見原因是忘記點「批准」。請到「推播企畫」分頁確認審核狀態是否為「已批准」。若已批准仍未發送，請確認 LINE Bot 是否仍在目標群組中，並到「發送紀錄」查看錯誤訊息。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-q-text">AI 產出的內容不夠精準，怎麼改善？</span>
+          <span class="faq-chevron"></span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">在「知識庫」分頁補充更多背景資訊：活動特色、注意事項、目標受眾、語氣要求等。知識庫越詳細，AI 產出的內容就越符合期待。</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-q-text">可以針對不同群組發送不同內容嗎？</span>
+          <span class="faq-chevron"></span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">可以。在 Agent 對話中直接說明：「A 群組收到○○，B 群組收到△△」，AI 會幫你分開建立兩組排程。</div></div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.querySelector('.faq-q').addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+          if (!isOpen) item.classList.add('open');
+        });
+      });
+    </script>
+  </div>
+</section>
+
+<!-- ── PROBLEM / SOLUTION ── -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label">02 · 問題與解法</div>
+    <h2>為什麼要做 WiPPY？</h2>
+    <p class="section-desc">活動主辦方每次都要手動撰寫推播文案、決定時機、對應不同群組——重複且容易出錯。</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <h3>Pain Points</h3>
+        <ul>
+          <li>手動撰寫推播文案，耗時且難以維持一致性</li>
+          <li>排程邏輯散落各處，缺乏可觀測性</li>
+          <li>AI 輸出難以驗證，parse 失敗直接爆掉</li>
+          <li>知識庫與歷史對話沒有系統性管理</li>
+        </ul>
+      </div>
+      <div class="problem-card solution-card">
+        <h3>WiPPY 的解法</h3>
+        <ul>
+          <li>自然語言輸入，Agent 自動產生訊息計畫</li>
+          <li>7 階段 Pipeline，每步可觀測、可恢復</li>
+          <li>內建 validator + repair，LLM 輸出壞掉自動修</li>
+          <li>Firestore 知識庫 + 對話歷史，context 有記憶</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PIPELINE ── -->
+<section id="pipeline">
+  <div class="container">
+    <div class="section-label">03 · 核心架構</div>
+    <h2>Harness Pipeline</h2>
+    <p class="section-desc">
+      7 階段有狀態執行器。每次執行都建立一筆 <code style="font-family:var(--mono);font-size:0.8rem;color:var(--accent-2)">harnessRun</code>，
+      記錄當前 stage、LLM 呼叫次數與狀態，讓 debug 不靠猜。
+    </p>
+
+    <div class="pipeline">
+      <div class="pipeline-item" data-stage="0">
+        <div class="pipeline-num">01</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">load_context</div>
+          <div class="pipeline-desc">平行查詢 Firestore，撈活動資料、知識庫、現有排程、歷史對話，組成 <code style="font-family:var(--mono);font-size:0.78rem;color:var(--accent-2)">ContextEnvelope</code></div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">contextBuilder.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>Firestore 查詢逾時或連線失敗</li><li>活動 ID 不存在，回傳空 context</li><li>知識庫筆數過多，context 超過 token 限制</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="1">
+        <div class="pipeline-num">02</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">build_prompt</div>
+          <div class="pipeline-desc">將 ContextEnvelope 注入 system prompt，拼接最近 10 輪對話，組成送給 LLM 的 messages 陣列</div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>ContextEnvelope 欄位缺失，prompt 組裝不完整</li><li>對話歷史過長，超過模型 context window</li><li>三種 intent 共用同一 prompt，指令干擾</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="2">
+        <div class="pipeline-num">03</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">run_planner</div>
+          <div class="pipeline-desc">呼叫 LLM；每次 run 最多 3 次呼叫（含 repair），捕捉 429 轉為結構化 <code style="font-family:var(--mono);font-size:0.78rem;color:var(--accent-2)">llm_rate_limit_error</code></div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">llmProvider.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>429 rate limit，轉為結構化錯誤後 run 失敗</li><li>LLM 回傳空字串或格式完全不符預期</li><li>max_llm_calls_exceeded（repair 耗盡 3 次配額）</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="3">
+        <div class="pipeline-num">04</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">parse_output</div>
+          <div class="pipeline-desc">從 raw reply 推斷 intent：能解析 JSON 陣列 → plan_messages；含 EXTRACTED_KNOWLEDGE: 區塊 → extract_knowledge；否則 → general_chat</div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>LLM 同時輸出 JSON + EXTRACTED_KNOWLEDGE，intent 判斷衝突</li><li>JSON 外層包了 markdown 代碼塊，parse 失敗誤判為 general_chat</li><li>intent 事後推斷，無法事前分流控制輸出格式</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="4">
+        <div class="pipeline-num">05</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">validate_output</div>
+          <div class="pipeline-desc">驗證 plan_messages 欄位合法性（ISO datetime、sequenceOrder 不重複、content 非空）；失敗自動送回 LLM repair，repair 後仍失敗整個 run 標記 failed</div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">planValidator.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>repair 後 LLM 仍回傳相同錯誤格式 → repair_failed</li><li>extract_knowledge 路徑不經過此 validator</li><li>validateExtractedKnowledge() 已實作但尚未接入</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="5">
+        <div class="pipeline-num">06</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">persist_effects</div>
+          <div class="pipeline-desc">批次寫入訊息排程與知識庫（每批 ≤ 499 ops）；所有寫入帶 runId 確保可追溯；session history 保留最近 20 筆</div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">persistenceAdapter.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>多批 batch.commit() 無原子性，中途失敗導致部分寫入</li><li>Firestore 寫入配額超限（499 ops/batch）</li><li>目前無補償邏輯，僅靠 runId 事後追溯</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline-item" data-stage="6">
+        <div class="pipeline-num">07</div>
+        <div class="pipeline-content">
+          <div class="pipeline-stage">finalize_response</div>
+          <div class="pipeline-desc">截掉回覆中的 EXTRACTED_KNOWLEDGE 區塊；若成功寫入排程則替換為固定確認文案；將 HarnessRun 寫為 completed</div>
+          <div class="pipeline-toggle">
+            <span class="pipeline-toggle-hint">展開詳情</span>
+            <span class="pipeline-chevron"></span>
+          </div>
+          <div class="pipeline-expand">
+            <div class="pipeline-expand-inner">
+              <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
+              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>HarnessRun 狀態更新失敗，run 停在 running</li><li>EXTRACTED_KNOWLEDGE 區塊截取 regex 邊界條件</li><li>confirm 文案寫死，無法反映實際寫入結果差異</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.pipeline-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const isOpen = item.classList.contains('open');
+          document.querySelectorAll('.pipeline-item.open').forEach(el => {
+            el.classList.remove('open');
+            el.querySelector('.pipeline-toggle-hint').textContent = '展開詳情';
+          });
+          if (!isOpen) {
+            item.classList.add('open');
+            item.querySelector('.pipeline-toggle-hint').textContent = '收起';
+          }
+        });
+      });
+    </script>
+
+    <!-- Observability Block -->
+    <div class="obs-block">
+      <div style="font-size:0.68rem;letter-spacing:0.1em;color:var(--text-mute);text-transform:uppercase;margin-bottom:1rem;">HarnessRun · 可觀測性</div>
+      <div class="obs-row"><span class="obs-key">status</span><span class="obs-val"><span class="hi">queued</span> → running → <span class="accent">completed</span> | failed</span></div>
+      <div class="obs-row"><span class="obs-key">currentStage</span><span class="obs-val">load_context → build_prompt → … → finalize_response</span></div>
+      <div class="obs-row"><span class="obs-key">llmCallCount</span><span class="obs-val">1 – 3（含 repair）</span></div>
+      <div class="obs-row"><span class="obs-key">intentType</span><span class="obs-val"><span class="hi">plan_messages</span> | extract_knowledge | general_chat</span></div>
+      <div class="obs-row"><span class="obs-key">lastError</span><span class="obs-val" style="color:var(--text-mute)">repair_failed / max_llm_calls_exceeded / …</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INTENTS ── -->
+<section id="intents">
+  <div class="container">
+    <div class="section-label">04 · 三種輸出類型</div>
+    <h2>Output Intent</h2>
+    <p class="section-desc">parse_output 階段事後推斷 intent，決定後續行為。每種 intent 對應不同的副作用。</p>
+    <div class="intent-grid">
+      <div class="intent-card">
+        <span class="intent-tag tag-plan">plan_messages</span>
+        <h3>訊息排程計畫</h3>
+        <p>產生訊息排程，寫入 Firestore 並準備推播至目標 LINE 群組。</p>
+        <div class="intent-effect">副作用 → <span>寫入排程 + 觸發推播</span></div>
+      </div>
+      <div class="intent-card">
+        <span class="intent-tag tag-extract">extract_knowledge</span>
+        <h3>知識萃取</h3>
+        <p>從對話中萃取結構化知識，更新群組知識庫，供下次 context 載入使用。</p>
+        <div class="intent-effect">副作用 → <span>更新知識庫</span></div>
+      </div>
+      <div class="intent-card">
+        <span class="intent-tag tag-chat">general_chat</span>
+        <h3>一般問答</h3>
+        <p>回答使用者的問題，純文字回覆，不觸發任何 Firestore 寫入。</p>
+        <div class="intent-effect">副作用 → <span style="color:var(--text-mute)">無</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LIMITS ── -->
+<section id="limits">
+  <div class="container">
+    <div class="section-label">05 · 已知限制</div>
+    <h2>v1.0 Known Issues</h2>
+    <p class="section-desc">以下是程式碼層級已確認的限制，不是警告，是下個版本的優先工單。</p>
+
+    <div class="release-wrap">
+      <div class="release-sidebar">
+        <div class="release-version">v1.0</div>
+        <div class="release-date">2026-04-28</div>
+        <div class="release-line" style="height: 120px;"></div>
+      </div>
+      <div class="release-body">
+        <div class="release-header">
+          <span class="release-header-title">Known Issues</span>
+          <span class="release-header-sub">— 程式碼層級已確認，非假設</span>
+        </div>
+        <div class="release-issue">
+          <div>
+            <div class="issue-title">knowledge validator 未接入</div>
+            <div class="issue-desc">
+              <code>validateExtractedKnowledge()</code> 已實作且有測試，但 orchestrator 只 import <code>validateMessagePlan</code>。knowledge 寫入前僅做 type 白名單過濾，不檢查 title / content 是否為空。
+            </div>
+          </div>
+          <span class="issue-phase phase-2-tag">Phase 2</span>
+        </div>
+        <div class="release-issue">
+          <div>
+            <div class="issue-title">單一 prompt 承擔三種 intent</div>
+            <div class="issue-desc">
+              <code>buildSystemPrompt()</code> 只有一個，三種 intent 共用同一組 system prompt。intent 在 <code>parse_output</code> 事後推斷，而非事前分流，prompt 品質受限。
+            </div>
+          </div>
+          <span class="issue-phase phase-3-tag">Phase 3</span>
+        </div>
+        <div class="release-issue">
+          <div>
+            <div class="issue-title">跨批寫入無原子性</div>
+            <div class="issue-desc">
+              <code>persistEffects()</code> 分批 <code>batch.commit()</code>，若第一批成功、第二批失敗，資料部分寫入，目前無補償邏輯，僅靠 <code>runId</code> 事後追溯。
+            </div>
+          </div>
+          <span class="issue-phase phase-2-tag">Phase 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-label">06 · 下一步</div>
+    <h2>Roadmap</h2>
+    <p class="section-desc">兩個 Phase，從 Safety 強化到 LangGraph-ready 架構。</p>
+
+    <div class="roadmap-phases">
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-badge">Phase 2</span>
+          <span class="phase-title">Recovery 與 Safety 強化</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">將 <code>validateExtractedKnowledge()</code> 接進 orchestrator 的 <code>validate_output</code> stage</div>
+          <div class="phase-item">建立分層錯誤分類（<code>context_load_error</code> / <code>llm_rate_limit_error</code> / <code>persistence_error</code>），每類有明確 retry 策略</div>
+          <div class="phase-item"><code>persist_effects</code> 多批寫入加補償邏輯，依 <code>runId</code> 重試未完成的批次</div>
+          <div class="phase-item">Scheduler / send path 套入相同的 retry + structured failure policy</div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-badge phase-3">Phase 3</span>
+          <span class="phase-title">LangGraph-ready</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">每種 intent 有獨立 prompt mode（<code>plan_messages</code> / <code>extract_knowledge</code> / <code>general_chat</code> 各自的 system prompt）</div>
+          <div class="phase-item">將每個 stage 顯式化為 tool contract（name、input/output schema、timeout、retry policy），為接 LangGraph 做準備</div>
+          <div class="phase-item"><code>ContextEnvelope</code> 生成器替換為 retrieval-augmented 版本，召回相關知識而非全量載入</div>
+          <div class="phase-item">明確標註 pause hook（<code>pause_before_persist</code>、<code>pause_after_validate</code>）對應 LangGraph human-in-the-loop 中斷點</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECH STACK ── -->
+<section id="stack">
+  <div class="container">
+    <div class="section-label">07 · 技術棧</div>
+    <h2>Tech Stack</h2>
+    <p class="section-desc">全端 TypeScript，GCP 原生部署。</p>
+
+    <div class="stack-section">
+      <div class="stack-group">
+        <h3>Backend</h3>
+        <div class="badges">
+          <span class="badge hi">Node.js 18+</span>
+          <span class="badge hi">TypeScript</span>
+          <span class="badge">Express</span>
+          <span class="badge">Firebase Admin SDK</span>
+          <span class="badge hi2">Firestore</span>
+          <span class="badge">Google Genai SDK</span>
+          <span class="badge">LINE Bot SDK</span>
+          <span class="badge hi2">Cloud Tasks</span>
+          <span class="badge">date-fns-tz</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <h3>Frontend</h3>
+        <div class="badges">
+          <span class="badge hi">React 19</span>
+          <span class="badge hi">TypeScript</span>
+          <span class="badge">Vite 8</span>
+          <span class="badge hi2">Tailwind CSS 4</span>
+          <span class="badge">React Router 7</span>
+          <span class="badge">Firebase SDK 12</span>
+        </div>
+      </div>
+      <div class="stack-group">
+        <h3>Infrastructure</h3>
+        <div class="badges">
+          <span class="badge hi2">Google Cloud Run</span>
+          <span class="badge hi2">Firebase Hosting</span>
+          <span class="badge hi2">Firestore</span>
+          <span class="badge">Cloud Tasks</span>
+          <span class="badge">LINE Messaging API</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <p>
+      WiPPY · v1.0 · Side Project by
+      <!-- 請替換為你的名字或連結 -->
+      <a href="https://github.com/willychiu-0822" target="_blank" rel="noopener">@willychiu-0822</a>
+      &nbsp;·&nbsp;
+      MIT License
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
