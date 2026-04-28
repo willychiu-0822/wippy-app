@@ -576,6 +576,16 @@
       padding: 0.65rem 0.9rem;
       border-radius: 8px;
     }
+    .chat-md { padding: 0.85rem 1rem; }
+    .chat-md p { margin: 0 0 0.6em; }
+    .chat-md p:last-child { margin-bottom: 0; }
+    .chat-md h4 { font-size: 0.82rem; font-weight: 700; color: var(--text); margin: 0.9em 0 0.3em; letter-spacing: 0.04em; text-transform: uppercase; }
+    .chat-md h5 { font-size: 0.8rem; font-weight: 600; color: var(--text); margin: 0.75em 0 0.25em; }
+    .chat-md ul, .chat-md ol { margin: 0.25em 0 0.6em 1.1em; padding: 0; }
+    .chat-md li { margin-bottom: 0.35em; }
+    .chat-md ul ul { margin-top: 0.2em; margin-bottom: 0; }
+    .chat-md hr { border: none; border-top: 1px solid var(--border); margin: 0.85em 0; }
+    .chat-md strong { color: var(--text); font-weight: 600; }
     .chat-bubble.user .chat-text {
       background: rgba(124,109,250,0.18);
       color: var(--text);
@@ -739,6 +749,14 @@
     }
 
     /* ── ROADMAP ── */
+    .roadmap-group-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      margin-bottom: 1rem;
+    }
     .roadmap-phases {
       display: flex; flex-direction: column; gap: 2rem;
     }
@@ -1019,7 +1037,7 @@
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#stack">技術棧</a></li>
   </ul>
-  <span class="nav-badge">v1.0</span>
+  <span class="nav-badge">v0.5 (preview)</span>
 </nav>
 
 <!-- ── HERO ── -->
@@ -1041,9 +1059,9 @@
         GitHub 原始碼
       </a>
       <!-- 截圖連結：可改為實際 demo url -->
-      <a href="#screenshots" class="btn-ghost">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        產品截圖
+      <a href="#guide" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        使用指南
       </a>
     </div>
 
@@ -1237,15 +1255,49 @@
       <div class="chat-demo-body">
         <div class="chat-bubble user">
           <div class="chat-role">你</div>
-          <div class="chat-text">這週幫我安排三則提醒訊息：禮拜三晚上 8 點提醒帶帳篷、禮拜五早上 10 點提醒報名截止、禮拜六早上 7 點出發提醒</div>
+          <div class="chat-text">我有一個漂書活動，五個朋友，五月一號要在匹客球場換書。我想在換書前這幾天（大概從今天到五一當天）在 LINE 群組裡推一些東西，讓大家進入狀態，因為這個活動的氣氛很重要——不是那種很熱鬧的活動，是比較安靜、有點文學感的東西。<br><br>我大概有幾個想法：<br>想提醒大家帶書、帶小卡，但不要太直白，感覺太像通知<br>想推一些有氣氛的東西，比如書摘或句子，讓大家慢慢有感覺</div>
         </div>
         <div class="chat-bubble ai">
           <div class="chat-role">AI Agent</div>
-          <div class="chat-text">好的，以下是草稿：<br><br>
-            ① 5/7（三）20:00 — 「露營夥伴們，記得準備帳篷、睡袋喔！還有三天就出發囉 ⛺」<br>
-            ② 5/9（五）10:00 — 「提醒大家，今天是報名截止日！還沒報名的趕快行動！」<br>
-            ③ 5/10（六）07:00 — 「今天出發！集合地點準時 8:30 見 🎉」<br><br>
-            確認沒問題的話，請說 <span class="chat-keyword">放進排程</span>
+          <div class="chat-text chat-md">
+            <p>要創造這種「安靜且有文學感」的氛圍，關鍵在於<strong>「留白」</strong>與<strong>「隱喻」</strong>。不要把這當成一個「活動」，而是一場「默契的約定」。以下我為你設計了從 4/27 到 4/30 (活動前一天) 的引導邏輯與文案範例。這些內容請用一種「隨手分享」的口吻發在群組裡。</p>
+            <hr>
+            <h4>預熱時間表</h4>
+            <h5>4/27（一）：關於「書架上的安靜」</h5>
+            <ul>
+              <li><strong>目的：</strong>讓大家開始意識到要帶書，但不說「請帶書」。</li>
+              <li><strong>文案：</strong>（發一張你書架的照片，或是網路上很有意境的閱讀角落圖）<br>「這幾天整理書櫃，發現有些書讀完後，在架子上站了很久，安靜得像是在等什麼。突然想到，也許它們也在期待一趟新的旅行，去看看誰會是下一個翻開它們的人。」</li>
+            </ul>
+            <h5>4/28（二）：關於「對話的痕跡」</h5>
+            <ul>
+              <li><strong>目的：</strong>隱晦帶出「小卡」的意義。</li>
+              <li><strong>文案：</strong>（分享一段書摘）<br>「以前看書，總喜歡在空白處寫下當時的註解。後來覺得，如果能把這些心情留給下一個讀者，就像是和未來的某個朋友跨越時空對話。如果這兩天有人挑選書的話，不妨也留下一張小卡吧，算是給這本書的一點告別，或是給下一站的祝福。」</li>
+            </ul>
+            <h5>4/29（三）：關於「流動的意義」</h5>
+            <ul>
+              <li><strong>目的：</strong>連結匹客球場與環境，強調靜謐感。</li>
+              <li><strong>文案：</strong>「這幾天一直在想，我們選在球場旁見面，在那種甚至還聽得見遠處揮拍聲的環境裡，讀著這些交換來的文字，應該會有一種很特別的沈澱感。書本像水一樣，就是要流動，才會有生命。」</li>
+            </ul>
+            <h5>4/30（四）：關於「不期而遇的懸念」</h5>
+            <ul>
+              <li><strong>目的：</strong>為明天的「規則」埋下伏筆。</li>
+              <li><strong>文案：</strong>「明天要見面了。關於這些書怎麼到下一個人手中，我心裡有個小想法，想試著讓過程多一點點不確定性，讓一切順著當時的直覺發生。明天見面時再和你們說。」</li>
+            </ul>
+            <hr>
+            <h4>給你的執行小提醒：</h4>
+            <ol>
+              <li><strong>規則的隱藏：</strong>既然你想當天公布規則，建議你將規則<strong>親手寫在一張很有質感的紙上</strong>，密封在信封裡。當天直接拿出來讀，而不只是口頭說明。這樣「公布規則」本身就成為了一個神聖的儀式。</li>
+              <li><strong>關於匹客球場：</strong>選擇這個地點的文學隱喻可以強調「動」與「靜」的對比。你在群組裡可以說：「我們在喧鬧的場地邊，築起一座小小的書塔，這份反差應該會很有意思。」</li>
+              <li><strong>群組語氣：</strong>
+                <ul>
+                  <li><strong>不要用：</strong>「大家記得帶喔！」、「活動當天請準時。」</li>
+                  <li><strong>要用：</strong>「很期待這幾天看見大家手邊的漂流書」、「那天我們在那裡見。」</li>
+                </ul>
+              </li>
+              <li><strong>回應：</strong>如果朋友在群組裡問「要帶幾本？」，你可以簡短回：「心裡想帶幾本就帶幾本，這是一個不需要給自己壓力的聚會。」</li>
+            </ol>
+            <p>這樣安排，整場活動會有一種「我們是因為靈魂契合而聚在一起讀書」的高級感，而不是一個單純的「物資交換活動」。</p>
+            <p>你覺得這個節奏符合你們的朋友圈嗎？<br>確認沒問題的話，請讓我知道。</p>
           </div>
         </div>
         <div class="chat-bubble user">
@@ -1254,7 +1306,7 @@
         </div>
         <div class="chat-bubble ai">
           <div class="chat-role">AI Agent</div>
-          <div class="chat-text">✅ 已將 3 則推播訊息加入排程！請到「推播企畫」分頁確認後點「批准」，訊息就會在指定時間自動發出。</div>
+          <div class="chat-text">✅ 已將 4 則推播訊息加入排程！請到「推播企畫」分頁確認後點「批准」，訊息就會在指定時間自動發出。</div>
         </div>
       </div>
     </div>
@@ -1349,7 +1401,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">contextBuilder.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>Firestore 查詢逾時或連線失敗</li><li>活動 ID 不存在，回傳空 context</li><li>知識庫筆數過多，context 超過 token 限制</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>不同群組間調性不同，未來可從對話等紀錄各群組風格</li><li>知識庫架構待擴充，以提供 LLM 更多活動相關資訊</li><li>知識庫筆數過多，context 超過 token 限制</li></ul></div>
             </div>
           </div>
         </div>
@@ -1366,7 +1418,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>ContextEnvelope 欄位缺失，prompt 組裝不完整</li><li>對話歷史過長，超過模型 context window</li><li>三種 intent 共用同一 prompt，指令干擾</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>對話歷史過長，超過模型 context window</li><li>待優化 System Prompt 中所有 Constraints 條件，使 llm 回覆合規合理內容</li><li>三種 intent 共用同一 prompt，指令干擾</li></ul></div>
             </div>
           </div>
         </div>
@@ -1383,7 +1435,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">llmProvider.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>429 rate limit，轉為結構化錯誤後 run 失敗</li><li>LLM 回傳空字串或格式完全不符預期</li><li>max_llm_calls_exceeded（repair 耗盡 3 次配額）</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>429 rate limit，轉為結構化錯誤後 run 失敗</li><li>LLM 回傳空字串或格式完全不符預期</li><li>max_llm_calls_exceeded（repair 耗盡 3 次配額）</li></ul></div>
             </div>
           </div>
         </div>
@@ -1400,7 +1452,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>LLM 同時輸出 JSON + EXTRACTED_KNOWLEDGE，intent 判斷衝突</li><li>JSON 外層包了 markdown 代碼塊，parse 失敗誤判為 general_chat</li><li>intent 事後推斷，無法事前分流控制輸出格式</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>LLM 同時輸出 JSON + EXTRACTED_KNOWLEDGE，intent 判斷衝突</li><li>intent 事後推斷，無法事前分流控制輸出格式</li></ul></div>
             </div>
           </div>
         </div>
@@ -1417,7 +1469,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">planValidator.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>repair 後 LLM 仍回傳相同錯誤格式 → repair_failed</li><li>extract_knowledge 路徑不經過此 validator</li><li>validateExtractedKnowledge() 已實作但尚未接入</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>repair 後 LLM 仍回傳相同錯誤格式 → repair_failed</li><li>extract_knowledge 路徑不經過此 validator</li><li>validateExtractedKnowledge() 已實作但尚未接入</li></ul></div>
             </div>
           </div>
         </div>
@@ -1434,7 +1486,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">persistenceAdapter.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>多批 batch.commit() 無原子性，中途失敗導致部分寫入</li><li>Firestore 寫入配額超限（499 ops/batch）</li><li>目前無補償邏輯，僅靠 runId 事後追溯</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>多批 batch.commit() 無原子性，中途失敗導致部分寫入</li><li>Firestore 寫入配額超限（499 ops/batch）</li><li>目前無補償邏輯，僅靠 runId 事後追溯</li></ul></div>
             </div>
           </div>
         </div>
@@ -1451,7 +1503,7 @@
           <div class="pipeline-expand">
             <div class="pipeline-expand-inner">
               <div class="pex-card"><div class="pex-label">負責檔案</div><div class="pex-file">harnessOrchestrator.ts</div></div>
-              <div class="pex-card"><div class="pex-label">可能問題</div><ul class="pex-issues"><li>HarnessRun 狀態更新失敗，run 停在 running</li><li>EXTRACTED_KNOWLEDGE 區塊截取 regex 邊界條件</li><li>confirm 文案寫死，無法反映實際寫入結果差異</li></ul></div>
+              <div class="pex-card"><div class="pex-label">待優化</div><ul class="pex-issues"><li>EXTRACTED_KNOWLEDGE 區塊截取 regex 邊界條件</li><li>confirm 文案寫死，無法反映實際寫入結果差異</li></ul></div>
             </div>
           </div>
         </div>
@@ -1519,12 +1571,12 @@
 <section id="limits">
   <div class="container">
     <div class="section-label">05 · 已知限制</div>
-    <h2>v1.0 Known Issues</h2>
+    <h2>v0.5 (preview) Known Issues</h2>
     <p class="section-desc">以下是程式碼層級已確認的限制，不是警告，是下個版本的優先工單。</p>
 
     <div class="release-wrap">
       <div class="release-sidebar">
-        <div class="release-version">v1.0</div>
+        <div class="release-version">v0.5 (preview)</div>
         <div class="release-date">2026-04-28</div>
         <div class="release-line" style="height: 120px;"></div>
       </div>
@@ -1570,8 +1622,9 @@
   <div class="container">
     <div class="section-label">06 · 下一步</div>
     <h2>Roadmap</h2>
-    <p class="section-desc">兩個 Phase，從 Safety 強化到 LangGraph-ready 架構。</p>
+    <p class="section-desc">分為技術強化與功能擴充兩條軸線，持續迭代。</p>
 
+    <div class="roadmap-group-label">技術強化</div>
     <div class="roadmap-phases">
       <div class="phase-block">
         <div class="phase-header">
@@ -1596,6 +1649,31 @@
           <div class="phase-item">將每個 stage 顯式化為 tool contract（name、input/output schema、timeout、retry policy），為接 LangGraph 做準備</div>
           <div class="phase-item"><code>ContextEnvelope</code> 生成器替換為 retrieval-augmented 版本，召回相關知識而非全量載入</div>
           <div class="phase-item">明確標註 pause hook（<code>pause_before_persist</code>、<code>pause_after_validate</code>）對應 LangGraph human-in-the-loop 中斷點</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-group-label" style="margin-top: 2.5rem;">功能優化及擴充</div>
+    <div class="roadmap-phases">
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-badge">Phase 2</span>
+          <span class="phase-title">知識庫與 Prompt 優化</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">優化知識庫可輸入類型及輸入方式，擴增不同格式檔案及串接方式</div>
+          <div class="phase-item">優化現有 System Prompt 的約束條件、產出格式、錯誤處理</div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header">
+          <span class="phase-badge phase-3">Phase 3</span>
+          <span class="phase-title">個人化風格與意圖判斷</span>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item">增加各群組個人化風格蒐集及紀錄機制，以供 LLM 針對不同群組產出不同調性的推播內容</div>
+          <div class="phase-item">設計意圖判斷機制，判斷後以使用不同 System Prompt</div>
         </div>
       </div>
     </div>
@@ -1653,7 +1731,7 @@
 <footer>
   <div class="container">
     <p>
-      WiPPY · v1.0 · Side Project by
+      WiPPY · v0.5 (preview) · Side Project by
       <!-- 請替換為你的名字或連結 -->
       <a href="https://github.com/willychiu-0822" target="_blank" rel="noopener">@willychiu-0822</a>
       &nbsp;·&nbsp;
