@@ -1341,14 +1341,13 @@
   <div class="container">
     <div class="section-label">02 · 問題與解法</div>
     <h2>為什麼要做 WiPPY？</h2>
-    <p class="section-desc">活動主辦方每次都要手動撰寫推播文案、決定時機、對應不同群組——重複且容易出錯。</p>
+    <p class="section-desc">讓活動主辦方專注於活動本身，僅需審查 AI 規劃的不同群組的客製推播文案、推播時機</p>
     <div class="problem-grid">
       <div class="problem-card">
         <h3>Pain Points</h3>
         <ul>
           <li>手動撰寫推播文案，耗時且難以維持一致性</li>
           <li>排程邏輯散落各處，缺乏可觀測性</li>
-          <li>AI 輸出難以驗證，parse 失敗直接爆掉</li>
           <li>知識庫與歷史對話沒有系統性管理</li>
         </ul>
       </div>
@@ -1357,7 +1356,6 @@
         <ul>
           <li>自然語言輸入，Agent 自動產生訊息計畫</li>
           <li>7 階段 Pipeline，每步可觀測、可恢復</li>
-          <li>內建 validator + repair，LLM 輸出壞掉自動修</li>
           <li>Firestore 知識庫 + 對話歷史，context 有記憶</li>
         </ul>
       </div>
@@ -1369,7 +1367,7 @@
 <section id="pipeline">
   <div class="container">
     <div class="section-label">03 · 核心架構</div>
-    <h2>Harness Pipeline</h2>
+    <h2>(非常簡陋的) Harness Pipeline</h2>
     <p class="section-desc">
       7 階段有狀態執行器。每次執行都建立一筆 <code style="font-family:var(--mono);font-size:0.8rem;color:var(--accent-2)">harnessRun</code>，
       記錄當前 stage、LLM 呼叫次數與狀態，讓 debug 不靠猜。
